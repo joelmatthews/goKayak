@@ -4,25 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title></title>
 </head>
 <body>
-    <h1>goKayak</h1>
+        <h1><%=kayak.title%></h1>
+        <h2><%=kayak.location%></h2>
 
-    <div>
         <div>
-            <a href="/kayaking">View Kayaking Spots</a>
+            <a href="/kayaking/<%=kayak._id%>/edit">Edit Kayaking Spot</a>
         </div>
-        <div>
-            <a href="/kayaking/new">Create a Kayaking Spot</a>
-        </div>
-
-    </div>
-
-
-
-
-
-
+        <a href="/kayaking">Back to All Kayaking Spots</a>
 </body>
 </html>
