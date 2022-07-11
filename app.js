@@ -1,6 +1,7 @@
 const express = require('express');
 const ejs = require('ejs');
 const path = require('path');
+const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const KayakSpot = require('./models/kayakSpot');
 
@@ -13,6 +14,7 @@ async function main() {
 const app = express();
 
 app.use(express.urlencoded({extended: true}));
+app.use(methodOverride('_method'));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
@@ -23,7 +25,6 @@ app.get('/', (req, res) => {
 
 app.get('/kayaking', async (req, res) => {
     const kayaking = await KayakSpot.find({});
-    console.log(kayaking)
     res.render('index', { kayaking });
 })
 
@@ -47,6 +48,18 @@ app.get('/kayaking/:id/edit', async (req, res) => {
     const { id } = req.params;
     const foundKayakSpot = await KayakSpot.findById(id);
     res.render('edit', { foundKayakSpot });
+})
+
+app.put('/kayaking/:id', async (req, res) => {
+    const { id } = req.params;
+    const updatedKayak = await KayakSpot.findByIdAndUpdate(id, { ...req.body.kayak });
+    res.redirect(`/kayaking/${updatedKayak._id}`)
+})
+
+app.delete('/kayaking/:id', async (req, res) => {
+    const { id } = req.params;
+    const deletedKayak = await KayakSpot.findByIdAndDelete(id);
+    res.redirect('/kayaking')
 })
 
 

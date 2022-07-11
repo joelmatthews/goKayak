@@ -12,6 +12,9 @@
 
         <div>
             <a href="/kayaking/<%=kayak._id%>/edit">Edit Kayaking Spot</a>
+            <form action="/kayaking/<%=kayak._id%>?_method=DELETE" method="POST">
+                <button>Delete</button>
+            </form>
         </div>
         <a href="/kayaking">Back to All Kayaking Spots</a>
 </body>
