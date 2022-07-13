@@ -1,30 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
+<% layout('layouts/boilerplate')%>
+    <div class="row d-flex flex-column align-items-center my-5">
+        <h1>Kayaking Spots</h1>
+        <a href="/kayaking/new" class="btn btn-success mt-3">Create Kayaking Spot</a>
+    </div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
-</head>
 
-<body>
-    <h1>Kayaking Spots</h1>
-
-    <a href="/kayaking/new">Create Kayaking Spot</a>
     <% for (let kayak of kayaking) {%>
-        <div>
-            <ul>
-                <a href="/kayaking/<%=kayak._id%>">
-                    <%=kayak.title%>, <%=kayak.location%>
-                </a>
-                <img src="<%=kayak.image%>" alt="">
-            </ul>
+        <div class="container-fluid">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <img class="img-fluid" src="<%=kayak.image%>" alt="">
+                </div>
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <%=kayak.title%>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <%=kayak.location%>
+                            </h6>
+                            <p class="card-text">
+                                <%=kayak.description%>
+                            </p>
+                            <a href="/kayaking/<%=kayak._id%>" class="card-link btn btn-info">Visit Spot</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
+
         <%}%>
-
-
-</body>
-
-</html>
