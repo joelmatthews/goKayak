@@ -4,9 +4,14 @@ const path = require('path');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const KayakSpot = require('./models/kayakSpot');
+const Review = require('./models/review');
 const ExpressError = require('./utilities/ExpressError');
-const catchAsync = require ('./utilities/catchAsync');
+const catchAsync = require('./utilities/catchAsync');
 const ejsMate = require('ejs-mate');
+const { kayakSchema, reviewSchema } = require('./joiSchemas.js');
+
+const kayaking = require('./routes/kayaking')
+const reviews = require('./routes/reviews')
 
 main().catch(err => console.log(err));
 
@@ -16,55 +21,37 @@ async function main() {
 
 const app = express();
 
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 
+app.use('/kayaking', kayaking)
+app.use('/kayaking/:id/reviews', reviews)
+
+
 app.get('/', (req, res) => {
     res.render('home');
 })
 
-app.get('/kayaking', catchAsync(async (req, res) => {
-    const kayaking = await KayakSpot.find({});
-    res.render('index', { kayaking });
-}))
+// app.post('/kayaking/:id/reviews', validateReview, catchAsync(async (req, res) => {
+//     const { id } = req.params;
+//     const kayak = await KayakSpot.findById(id);
+//     const review = await new Review(req.body.review);
+//     kayak.reviews.push(review);
+//     await review.save();
+//     await kayak.save();
+//     res.redirect(`/kayaking/${kayak._id}`)
+// }))
 
-app.get('/kayaking/new', (req, res) => {
-    res.render('new');
-})
-
-app.post('/kayaking', catchAsync(async (req, res) => {
-    const newKayakSpot = new KayakSpot(req.body.kayak);
-    await newKayakSpot.save();
-    res.redirect(`/kayaking/${newKayakSpot._id}`)
-}))
-
-app.get('/kayaking/:id', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const kayak = await KayakSpot.findById(id);
-    res.render('show', { kayak });
-}))
-
-app.get('/kayaking/:id/edit', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const foundKayakSpot = await KayakSpot.findById(id);
-    res.render('edit', { foundKayakSpot });
-}))
-
-app.put('/kayaking/:id', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const updatedKayak = await KayakSpot.findByIdAndUpdate(id, { ...req.body.kayak });
-    res.redirect(`/kayaking/${updatedKayak._id}`)
-}))
-
-app.delete('/kayaking/:id', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const deletedKayak = await KayakSpot.findByIdAndDelete(id);
-    res.redirect('/kayaking')
-}))
+// app.delete('/kayaking/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+//     const { id, reviewId } = req.params;
+//     await KayakSpot.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});
+//     await Review.findByIdAndDelete(reviewId);
+//     res.redirect(`/kayaking/${id}`);
+// }))
 
 app.all('*', (req, res, next) => {
     next(new ExpressError('Oh no, page not found', 404));
@@ -72,7 +59,7 @@ app.all('*', (req, res, next) => {
 
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
-    if(!err.message) err.message = 'Oh no, something went wrong!'
+    if (!err.message) err.message = 'Oh no, something went wrong!'
     res.status(statusCode).render('error', { err });
 })
 

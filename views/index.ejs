@@ -1,12 +1,13 @@
 <% layout('layouts/boilerplate')%>
-    <div class="row d-flex flex-column align-items-center my-5">
-        <h1>Kayaking Spots</h1>
-        <a href="/kayaking/new" class="btn btn-success mt-3">Create Kayaking Spot</a>
+    <div class="row my-3">
+        <div>
+            <h1>Kayaking Spots</h1>
+            <a href="/kayaking/new" class="btn btn-success mt-3">Create Kayaking Spot</a>
+        </div>
     </div>
 
 
     <% for (let kayak of kayaking) {%>
-        <div class="container-fluid">
             <div class="row mb-3">
                 <div class="col-md-4">
                     <img class="img-fluid" src="<%=kayak.image%>" alt="">
@@ -23,12 +24,11 @@
                             <p class="card-text">
                                 <%=kayak.description%>
                             </p>
-                            <a href="/kayaking/<%=kayak._id%>" class="card-link btn btn-info">Visit Spot</a>
+                            <a href="/kayaking/<%=kayak._id%>" class="card-link btn btn-primary">Visit Spot</a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
 
         <%}%>

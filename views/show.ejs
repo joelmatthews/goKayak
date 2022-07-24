@@ -1,21 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-</head>
-<body>
-        <h1><%=kayak.title%></h1>
-        <h2><%=kayak.location%></h2>
-
-        <div>
-            <a href="/kayaking/<%=kayak._id%>/edit">Edit Kayaking Spot</a>
-            <form action="/kayaking/<%=kayak._id%>?_method=DELETE" method="POST">
-                <button>Delete</button>
-            </form>
+<% layout('layouts/boilerplate')%>
+    <div class="row">
+        <div class="col-6">
+            <div class="card my-3">
+                <img class="card-img-top" src="<%=kayak.image%>" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <%=kayak.title%>
+                    </h5>
+                    <p class="card-text">
+                        <%=kayak.description%>
+                    </p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <%=kayak.location%>
+                    </li>
+                </ul>
+                <div class="card-body">
+                    <a href="/kayaking/<%=kayak._id%>/edit" class="card-link btn btn-warning">Edit Spot</a>
+                    <form class="d-inline-block" action="/kayaking/<%=kayak._id%>?_method=DELETE" method="POST">
+                        <button class="card-link btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <a href="/kayaking">Back to All Kayaking Spots</a>
-</body>
-</html>
+        <div class="col-6 mt-3">
+            <form action="/kayaking/<%=kayak._id%>/reviews" method="POST" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="rating" class="form-label">Rating</label>
+                    <input type="range" class="form-range" min="1" max="5" class="form-control" id="rating" name="review[rating]">
+                </div>
+                <div class="mb-3">
+                    <label for="review-body" class="form-label">Review</label>
+                    <textarea name="review[body]" id="review-body" class="form-control" cols="30" rows="5"></textarea>
+                </div>
+                <button class="btn btn-success">Submit</button>
+            </form>
+            <% for (let review of kayak.reviews) { %>
+                <div class="card my-3">
+                    <div class="card-body">
+                      <h5 class="card-title">Rating: <%=review.rating%></h5>
+                      <p class="card-text">Review: <%=review.body%></p>
+                      <form action="/kayaking/<%=kayak._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                    </div>
+                  </div>
+            <%}%>
+        </div>
+    </div>
+    
