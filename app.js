@@ -3,12 +3,11 @@ const ejs = require('ejs');
 const path = require('path');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
-const KayakSpot = require('./models/kayakSpot');
-const Review = require('./models/review');
 const ExpressError = require('./utilities/ExpressError');
-const catchAsync = require('./utilities/catchAsync');
 const ejsMate = require('ejs-mate');
-const { kayakSchema, reviewSchema } = require('./joiSchemas.js');
+const session = require('express-session');
+const flash = require('connect-flash');
+
 
 const kayaking = require('./routes/kayaking')
 const reviews = require('./routes/reviews')
@@ -21,8 +20,23 @@ async function main() {
 
 const app = express();
 
+const sessionOptions = {
+    secret: 'notagoodsecret',
+    resave: false,
+    saveUninitialized: true,
+}
+
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
+
 
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
@@ -32,26 +46,11 @@ app.use('/kayaking', kayaking)
 app.use('/kayaking/:id/reviews', reviews)
 
 
+
+
 app.get('/', (req, res) => {
     res.render('home');
 })
-
-// app.post('/kayaking/:id/reviews', validateReview, catchAsync(async (req, res) => {
-//     const { id } = req.params;
-//     const kayak = await KayakSpot.findById(id);
-//     const review = await new Review(req.body.review);
-//     kayak.reviews.push(review);
-//     await review.save();
-//     await kayak.save();
-//     res.redirect(`/kayaking/${kayak._id}`)
-// }))
-
-// app.delete('/kayaking/:id/reviews/:reviewId', catchAsync(async (req, res) => {
-//     const { id, reviewId } = req.params;
-//     await KayakSpot.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});
-//     await Review.findByIdAndDelete(reviewId);
-//     res.redirect(`/kayaking/${id}`);
-// }))
 
 app.all('*', (req, res, next) => {
     next(new ExpressError('Oh no, page not found', 404));

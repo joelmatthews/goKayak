@@ -27,30 +27,41 @@ router.get('/new', (req, res) => {
 router.post('/', validateKayak, catchAsync(async (req, res) => {
     const newKayakSpot = new KayakSpot(req.body.kayak);
     await newKayakSpot.save();
+    req.flash('success', 'Successfully created a Kayaking Spot');
     res.redirect(`/kayaking/${newKayakSpot._id}`)
 }))
 
 router.get('/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
-    const kayak = await (await KayakSpot.findById(id)).populate('reviews');
+    const kayak = await KayakSpot.findById(id).populate('reviews');
+    if (!kayak) {
+        req.flash('error', 'Cannot find Kayaking Spot')
+        return res.redirect('/kayaking')
+    }
     res.render('show', { kayak });
 }))
 
 router.get('/:id/edit', catchAsync(async (req, res) => {
     const { id } = req.params;
     const foundKayakSpot = await KayakSpot.findById(id);
+    if(!foundKayakSpot){
+        req.flash('error', 'Cannot find Kayaking Spot')
+        return res.redirect('/kayaking')
+    }
     res.render('edit', { foundKayakSpot });
 }))
 
 router.put('/:id', validateKayak, catchAsync(async (req, res) => {
     const { id } = req.params;
     const updatedKayak = await KayakSpot.findByIdAndUpdate(id, { ...req.body.kayak });
+    req.flash('success', 'Successfully updated the Kayaking Spot');
     res.redirect(`/kayaking/${updatedKayak._id}`)
 }))
 
 router.delete('/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const deletedKayak = await KayakSpot.findByIdAndDelete(id);
+    req.flash('success', 'Successfully deleted the Kayaking Spot');
     res.redirect('/kayaking')
 }))
 
